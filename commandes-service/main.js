@@ -1,48 +1,25 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const swaggerJsdoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
+const mongoose = require('mongoose');
 
 dotenv.config();
-
-const port = process.env.PORT || 5000;
-
 const app = express();
 
 app.use(express.json());
 
-// Swagger
-const swaggerOptions = {
-  swaggerDefinition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'API Documentation',
-      version: '1.0.0',
-      description: 'API documentation for the project'
-    },
-    servers: [
-      {
-        url: `http://localhost:${port}`
-      }
-    ]
-  },
-  apis: ['./routes/user/*.js']
-};
+const port = process.env.PORT || 5000;
 
-const swaggerDocs = swaggerJsdoc(swaggerOptions);
+// Connexion à MongoDB
+mongoose.connect(process.env.MONGO_URI_RATP, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => console.log("MongoDB connecté"))
+  .catch(err => console.error("Erreur de connexion MongoDB :", err));
 
-// La route pour Swagger
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
-// La route pour les utilisateurs
-const userRoutes = require('./routes/demandes/')(db);
-app.use('/demandes', userRoutes);
-
-// La route par défaut
-app.get('/', (req, res) => {
-  res.send('Hello World');
-});
+// Importation des routes
+const demandesRoutes = require('./routes/demandes/demandes');
+app.use('/demandes', demandesRoutes);
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Serveur démarré sur le port ${port}`);
 });

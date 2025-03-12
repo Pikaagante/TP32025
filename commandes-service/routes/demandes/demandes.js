@@ -8,7 +8,7 @@ router.delete("/delete/:id", demandesController.deleteCommande);
 
 router.put("/update/:id", demandesController.updateCommande);
 
-router.get("/get/:id", demandesController.getCommande);
+router.get("/get/:id", demandesController.getCommandeById);
 
 // TODO: Swagger
 

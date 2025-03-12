@@ -1,12 +1,12 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const demandesController = require('./demandesController');
+const demandesController = require("./demandesController");
 
-router.post('/add', demandesController.addCommande);
+router.post("/add", demandesController.addCommande);
 
-router.delete('/delete/:id', demandesController.deleteCommande);
+router.delete("/delete/:id", demandesController.deleteCommande);
 
-// put
+router.put("/update/:id", demandesController.updateCommande);
 
 // get
 

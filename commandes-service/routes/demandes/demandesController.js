@@ -62,9 +62,10 @@ exports.updateCommande = async (req, res) => {
       return res.status(400).json({ message: "Tous les champs sont requis" });
     }
 
-    const commandeExistante = await Demande.findById(id);
+    const commandeExistante = await Demande.findOne({ clientId: id }); // Recherche par clientId
+
     if (!commandeExistante) {
-      return res.status(404).json({ message: "Commande non trouvée" });
+      return res.status(404).json({ message: "Commande non trouvée pour ce client" });
     }
 
     commandeExistante.clientId = clientId;
@@ -84,50 +85,16 @@ exports.updateCommande = async (req, res) => {
   }
 };
 
-// nouveau
-exports.updateCommandePartielle = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { clientId, produit, quantite, dateCommande } = req.body;
-
-    if (!id) {
-      return res.status(400).json({ message: "ID de commande requis" });
-    }
-
-    const commandeExistante = await Demande.findById(id);
-    if (!commandeExistante) {
-      return res.status(404).json({ message: "Commande non trouvée" });
-    }
-
-    // Mettre à jour seulement les champs fournis dans la requête
-    if (clientId) commandeExistante.clientId = clientId;
-    if (produit) commandeExistante.produit = produit;
-    if (quantite) commandeExistante.quantite = quantite;
-    if (dateCommande) commandeExistante.dateCommande = dateCommande;
-
-    await commandeExistante.save();
-
-    res.status(200).json({
-      message: "Commande mise à jour partiellement avec succès",
-      commande: commandeExistante,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Erreur serveur", error: error.message });
-  }
-};
-// fin 
-
 exports.getCommandeById = async (req, res) => {
   try {
     const { id } = req.params;
     if (!id) {
-      return res.status(400).json({ message: "ID de commande requis" });
+      return res.status(400).json({ message: "ID de client requis" });
     }
 
-    const commande = await Demande.findById(id);
+    const commande = await Demande.findOne({ clientId: id });
     if (!commande) {
-      return res.status(404).json({ message: "Commande non trouvée" });
+      return res.status(404).json({ message: "Commande non trouvée pour ce client" });
     }
 
     res.status(200).json({ commande });
@@ -136,3 +103,4 @@ exports.getCommandeById = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
 };
+

@@ -5,7 +5,6 @@ exports.addCommande = async (req, res) => {
     console.log("Requête reçue avec body :", req.body);
 
     const { clientId, produit, quantite, dateCommande } = req.body;
-
     if (!clientId || !produit || !quantite || !dateCommande) {
       return res.status(400).json({ message: "Tous les champs sont requis" });
     }
@@ -32,13 +31,11 @@ exports.addCommande = async (req, res) => {
 exports.deleteCommande = async (req, res) => {
   try {
     const { id } = req.params;
-
     if (!id) {
       return res.status(400).json({ message: "ID de commande requis" });
     }
 
     const commandeSupprimee = await Demande.findOneAndDelete({ clientId: id });
-
     if (!commandeSupprimee) {
       return res.status(404).json({ message: "Commande non trouvée" });
     }
@@ -61,13 +58,11 @@ exports.updateCommande = async (req, res) => {
     if (!id) {
       return res.status(400).json({ message: "ID de commande requis" });
     }
-
     if (!clientId || !produit || !quantite || !dateCommande) {
       return res.status(400).json({ message: "Tous les champs sont requis" });
     }
 
     const commandeExistante = await Demande.findById(id);
-
     if (!commandeExistante) {
       return res.status(404).json({ message: "Commande non trouvée" });
     }
@@ -89,16 +84,48 @@ exports.updateCommande = async (req, res) => {
   }
 };
 
-exports.getCommandeById = async (req, res) => {
+// nouveau
+exports.updateCommandePartielle = async (req, res) => {
   try {
     const { id } = req.params;
+    const { clientId, produit, quantite, dateCommande } = req.body;
 
     if (!id) {
       return res.status(400).json({ message: "ID de commande requis" });
     }
 
-    const commande = await Demande.findById(id);
+    const commandeExistante = await Demande.findById(id);
+    if (!commandeExistante) {
+      return res.status(404).json({ message: "Commande non trouvée" });
+    }
 
+    // Mettre à jour seulement les champs fournis dans la requête
+    if (clientId) commandeExistante.clientId = clientId;
+    if (produit) commandeExistante.produit = produit;
+    if (quantite) commandeExistante.quantite = quantite;
+    if (dateCommande) commandeExistante.dateCommande = dateCommande;
+
+    await commandeExistante.save();
+
+    res.status(200).json({
+      message: "Commande mise à jour partiellement avec succès",
+      commande: commandeExistante,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
+  }
+};
+// fin 
+
+exports.getCommandeById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ message: "ID de commande requis" });
+    }
+
+    const commande = await Demande.findById(id);
     if (!commande) {
       return res.status(404).json({ message: "Commande non trouvée" });
     }

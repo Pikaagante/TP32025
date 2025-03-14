@@ -10,6 +10,10 @@ router.put("/update/:id", demandesController.updateCommande);
 
 router.get("/get/:id", demandesController.getCommandeById);
 
+// nouveau
+router.put("/update-partial/:id", demandesController.updateCommandePartielle);
+// fin 
+
 // TODO: Swagger
 
 module.exports = router;
